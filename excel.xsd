@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="urn:schemas-microsoft-com:office:excel">
+	<xs:element name="ExcelWorkbook"></xs:element>
+	<xs:attribute name="FullRows" type="xs:positiveInteger"/>
+	<xs:attribute name="FullColumns" type="xs:positiveInteger"/>
+</xs:schema>

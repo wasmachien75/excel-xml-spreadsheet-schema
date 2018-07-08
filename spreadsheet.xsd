@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" xmlns:x="urn:schemas-microsoft-com:office:excel"
+	xmlns:o="urn:schemas-microsoft-com:office:office" targetNamespace="urn:schemas-microsoft-com:office:spreadsheet" attributeFormDefault="qualified" elementFormDefault="qualified">
+	<xs:import namespace="urn:schemas-microsoft-com:office:office" schemaLocation="office.xsd"/>
+	<xs:import namespace="urn:schemas-microsoft-com:office:excel" schemaLocation="excel.xsd"/>
+	<xs:include schemaLocation="styles.xsd"></xs:include>
+	
+	<xs:element name="Workbook">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="o:DocumentProperties"/>
+				<xs:element ref="o:OfficeDocumentSettings"/>
+				<xs:element ref="x:ExcelWorkbook"/>
+				<xs:element name="Styles" minOccurs="1">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element maxOccurs="unbounded" type="ss:Style" name="Style"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Worksheet" minOccurs="1">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Names"/>
+							<xs:element name="Table" minOccurs="1">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Column" maxOccurs="unbounded"/>
+										<xs:element name="Row" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="Cell" maxOccurs="unbounded" minOccurs="0" type="ss:Cell">
+														<xs:annotation>
+															<xs:documentation>Defines a cell.</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+												</xs:sequence>
+												<!--<xs:attribute name="AutoFitHeight">
+													<xs:simpleType>
+														<xs:restriction base="xs:int">
+															<xs:minInclusive value="0"/>
+															<xs:maxInclusive value="1"/>
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:attribute>-->
+												<xs:anyAttribute processContents="skip" namespace="urn:schemas-microsoft-com:office:spreadsheet"/>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+									<xs:attribute ref="x:FullColumns"/>
+									<xs:attribute ref="x:FullRows"/>
+									<xs:attribute name="DefaultRowHeight" type="xs:float"/>
+								</xs:complexType>
+							</xs:element>
+							<xs:any minOccurs="0" processContents="lax"></xs:any>
+						</xs:sequence>
+						<xs:attribute form="qualified" name="Name"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

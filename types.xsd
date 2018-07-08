@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:schemas-microsoft-com:office:spreadsheet" attributeFormDefault="qualified" elementFormDefault="qualified">
+	<xs:complexType name="Style">
+		<xs:all>
+			<xs:element name="Alignment" minOccurs="0"></xs:element>
+			<xs:element name="Borders" minOccurs="0"></xs:element>
+			<xs:element name="Font" minOccurs="0"></xs:element>
+			<xs:element name="Interior" minOccurs="0"></xs:element>
+			<xs:element name="NumberFormat" minOccurs="0"></xs:element>
+			<xs:element name="Protection" minOccurs="0"></xs:element>
+		</xs:all>
+		<xs:attribute name="ID" use="required"/>
+		<xs:attribute name="Name" use="optional"/>
+	</xs:complexType>
+	
+	<xs:complexType name="Cell">
+		<xs:sequence>
+			<xs:element name="Data" minOccurs="0">
+				<xs:complexType mixed="true">
+					<xs:attribute name="Type" >
+						<xs:simpleType>
+							<xs:restriction base="xs:string">
+								<xs:enumeration value="String"></xs:enumeration>
+								<xs:enumeration value="Number"></xs:enumeration>
+								<xs:enumeration value="DateTime"></xs:enumeration>
+								<xs:enumeration value="Boolean"></xs:enumeration>
+								<xs:enumeration value="Error"></xs:enumeration>
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:attribute>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="NamedCell" maxOccurs="unbounded" minOccurs="0"/>
+			</xs:sequence>
+		<xs:attribute name="StyleID" use="optional">
+			<xs:annotation>
+				<xs:documentation>
+					Determines the style used by the cell. If not used, will revert to the style with ss:ID="Default".
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+</xs:schema>
