@@ -1,55 +1,123 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" xmlns:x="urn:schemas-microsoft-com:office:excel"
-	xmlns:o="urn:schemas-microsoft-com:office:office" targetNamespace="urn:schemas-microsoft-com:office:spreadsheet" attributeFormDefault="qualified" elementFormDefault="qualified">
+	xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:sch="http://purl.oclc.org/dsdl/schematron" targetNamespace="urn:schemas-microsoft-com:office:spreadsheet" attributeFormDefault="qualified" elementFormDefault="qualified">
 	<xs:import namespace="urn:schemas-microsoft-com:office:office" schemaLocation="office.xsd"/>
 	<xs:import namespace="urn:schemas-microsoft-com:office:excel" schemaLocation="excel.xsd"/>
-	<xs:include schemaLocation="styles.xsd"></xs:include>
-	
+	<xs:include schemaLocation="types.xsd"></xs:include>
+	<xs:annotation>
+		<xs:appinfo>
+			<sch:ns uri="urn:schemas-microsoft-com:office:spreadsheet" prefix="ss"/>
+		</xs:appinfo>
+	</xs:annotation>
 	<xs:element name="Workbook">
+		<xs:annotation>
+			<xs:documentation>
+				Defines a workbook that will contain one or more Worksheet elements. This is the top-most element of an XML Spreadsheet document and is required. This element has a required order for child elements. 
+			</xs:documentation>
+		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="o:DocumentProperties"/>
-				<xs:element ref="o:OfficeDocumentSettings"/>
-				<xs:element ref="x:ExcelWorkbook"/>
-				<xs:element name="Styles" minOccurs="1">
+				<xs:element ref="o:OfficeDocumentSettings" minOccurs="0"/>
+				<xs:element ref="x:ExcelWorkbook" minOccurs="0"/>
+				<xs:element name="Styles" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>
+							Contains the style definitions for the current worksheet. This element is optional, but is required to perform for any custom formatting.
+						</xs:documentation>
+					</xs:annotation>
 					<xs:complexType>
 						<xs:sequence>
 							<xs:element maxOccurs="unbounded" type="ss:Style" name="Style"/>
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
+				<xs:element name="Names" minOccurs="0"/>
 				<xs:element name="Worksheet" minOccurs="1">
+					<xs:annotation>
+						<xs:appinfo>
+							<sch:pattern>
+								<sch:rule context="//@ss:StyleID">
+									<sch:assert test=". = /ss:Workbook/ss:Styles/ss:Style/@ss:ID">StyleID must be defined in Styles</sch:assert>
+								</sch:rule>
+							</sch:pattern>
+						</xs:appinfo>
+					</xs:annotation>
 					<xs:complexType>
 						<xs:sequence>
 							<xs:element name="Names"/>
 							<xs:element name="Table" minOccurs="1">
 								<xs:complexType>
 									<xs:sequence>
-										<xs:element name="Column" maxOccurs="unbounded"/>
+										<xs:element name="Column" maxOccurs="unbounded">
+											<xs:annotation>
+												<xs:documentation>
+													Defines the formatting for one or more adjacent columns. This element contains no data; all cell data is stored within Row elements. All ss:Column elements must appear before the first ss:Row element, otherwise unexpected behavior may occur.
+												</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:attribute name="AutoFitWidth">
+													<xs:annotation>
+														<xs:documentation>
+															If this attribute is specified as True ("1"), it means that this column should be autosized for numeric and date values only. We do not autofit textual values.
+														</xs:documentation>
+													</xs:annotation>
+												</xs:attribute>
+												<xs:attribute name="Width"></xs:attribute>
+												<xs:attribute name="StyleID"></xs:attribute>
+												<xs:attribute name="Span"></xs:attribute>
+												<xs:attribute name="Index"></xs:attribute>
+												<xs:attribute name="Hidden"></xs:attribute>
+											</xs:complexType>
+										</xs:element>
 										<xs:element name="Row" maxOccurs="unbounded">
 											<xs:complexType>
 												<xs:sequence>
 													<xs:element name="Cell" maxOccurs="unbounded" minOccurs="0" type="ss:Cell">
 														<xs:annotation>
-															<xs:documentation>Defines a cell.</xs:documentation>
+															<xs:documentation>Defines a single cell within the contained row.</xs:documentation>
 														</xs:annotation>
 													</xs:element>
 												</xs:sequence>
-												<!--<xs:attribute name="AutoFitHeight">
+												<xs:attribute name="AutoFitHeight">
+													<xs:annotation>
+														<xs:documentation>
+															If this attribute is True (1), it means that this row should be autosized. By default all rows are autofitted, so changing the size of the font in a cell will automatically resize a row.
+															If both ss:Height and ss:AutoFitHeight exist, the behavior is as follows:
+															
+															ss:AutoFitHeight="1" and ss:Height is unspecified: Autofit the row height to fit the content.
+															ss:AutoFitHeight="1" and ss:Height is specified: Set the row to the specified height and only autofit if the size of the content is larger than the specified height.
+															ss:AutoFitHeight="0" and ss:Height is unspecified: Use the default row height.
+															ss:AutoFitHeight="0" and ss:Height is specified: Use the specified height.
+														</xs:documentation>
+													</xs:annotation>
 													<xs:simpleType>
 														<xs:restriction base="xs:int">
 															<xs:minInclusive value="0"/>
 															<xs:maxInclusive value="1"/>
 														</xs:restriction>
 													</xs:simpleType>
-												</xs:attribute>-->
+												</xs:attribute>
 												<xs:anyAttribute processContents="skip" namespace="urn:schemas-microsoft-com:office:spreadsheet"/>
 											</xs:complexType>
 										</xs:element>
 									</xs:sequence>
 									<xs:attribute ref="x:FullColumns"/>
-									<xs:attribute ref="x:FullRows"/>
-									<xs:attribute name="DefaultRowHeight" type="xs:float"/>
+									<xs:attribute name="DefaultColumnWidth" type="xs:double" default="48">
+										<xs:annotation>
+											<xs:documentation>
+												Specifies the default width of columns in this table. This attribute is specified in points.
+											</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute ref="x:FullRows">
+										<xs:annotation>
+											<xs:documentation>
+												This attribute is ignored on file load, but on XML Spreadsheet paste it is taken to indicate that the source clip has full rows.
+											</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="DefaultRowHeight" type="xs:double" default="12.75"/>
 								</xs:complexType>
 							</xs:element>
 							<xs:any minOccurs="0" processContents="lax"></xs:any>

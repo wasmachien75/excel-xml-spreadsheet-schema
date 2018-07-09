@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="urn:schemas-microsoft-com:office:excel">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="urn:schemas-microsoft-com:office:excel" xmlns:x="urn:schemas-microsoft-com:office:excel">
 	<xs:element name="ExcelWorkbook"></xs:element>
 	<xs:attribute name="FullRows" type="xs:positiveInteger"/>
 	<xs:attribute name="FullColumns" type="xs:positiveInteger"/>
+	<xs:attribute name="Ticked"/>
+	<xs:attribute name="Family" type="x:FontFamily"/>
+	<xs:attribute name="HRefScreenTip"/>
+	
+	<xs:simpleType name="FontFamily">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Automatic"></xs:enumeration>
+			<xs:enumeration value="Decorative"></xs:enumeration>
+			<xs:enumeration value="Modern"></xs:enumeration>
+			<xs:enumeration value="Roman"></xs:enumeration>
+			<xs:enumeration value="Script"></xs:enumeration>
+			<xs:enumeration value="Swiss"></xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	
 </xs:schema>

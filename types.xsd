@@ -1,23 +1,144 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:schemas-microsoft-com:office:spreadsheet" attributeFormDefault="qualified" elementFormDefault="qualified">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" targetNamespace="urn:schemas-microsoft-com:office:spreadsheet" attributeFormDefault="qualified" elementFormDefault="qualified">
+	<xs:import namespace="urn:schemas-microsoft-com:office:excel" schemaLocation="excel.xsd"/>
+		
+	<xs:simpleType name="Color">
+		<xs:annotation>
+			<xs:documentation>
+				Specifies the fill color of the cell. This value can be either a 6-hexadecimal digit number in "#rrggbb" format or it can be any of the Internet Explorer named colors (including the named Windows colors).
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="#[0-9 A-F a-f]{6}"></xs:pattern>
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="Boolean">
+		<xs:restriction base="xs:int">
+			<xs:enumeration value="0"/>
+			<xs:enumeration value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="Position">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Left"></xs:enumeration>
+			<xs:enumeration value="Top"></xs:enumeration>
+			<xs:enumeration value="Right"></xs:enumeration>
+			<xs:enumeration value="Bottom"></xs:enumeration>
+			<xs:enumeration value="DiagonalLeft"></xs:enumeration>
+			<xs:enumeration value="DiagonalRight"></xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="Pattern">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="None"></xs:enumeration>
+			<xs:enumeration value="Solid"></xs:enumeration>
+			<xs:enumeration value="Gray75"></xs:enumeration>
+			<xs:enumeration value="Gray50"></xs:enumeration>
+			<xs:enumeration value="Gray25"></xs:enumeration>
+			<xs:enumeration value="Gray0625"></xs:enumeration>
+			<xs:enumeration value="HorzStripe"></xs:enumeration>
+			<xs:enumeration value="VertStripe"></xs:enumeration>
+			<xs:enumeration value="DiagStripe"></xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="LineStyle">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="None"></xs:enumeration>
+			<xs:enumeration value="Continuous"></xs:enumeration>
+			<xs:enumeration value="Dash"></xs:enumeration>
+			<xs:enumeration value="Dot"></xs:enumeration>
+			<xs:enumeration value="DashDot"></xs:enumeration>
+			<xs:enumeration value="DashDotDot"></xs:enumeration>
+			<xs:enumeration value="SlantDashDot"></xs:enumeration>
+			<xs:enumeration value="Double"></xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="Weight">
+		<xs:restriction base="xs:int">
+			<xs:enumeration value="0"></xs:enumeration>
+			<xs:enumeration value="1"></xs:enumeration>
+			<xs:enumeration value="2"></xs:enumeration>
+			<xs:enumeration value="3"></xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	
 	<xs:complexType name="Style">
 		<xs:all>
 			<xs:element name="Alignment" minOccurs="0"></xs:element>
-			<xs:element name="Borders" minOccurs="0"></xs:element>
-			<xs:element name="Font" minOccurs="0"></xs:element>
-			<xs:element name="Interior" minOccurs="0"></xs:element>
+			<xs:element name="Borders" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Border" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="Position" type="ss:Position"/>
+								<xs:attribute name="Color" type="ss:Color"/>
+								<xs:attribute name="LineStyle" type="ss:LineStyle" default="None"/>
+								<xs:attribute name="Weight" type="ss:Weight" default="0"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Font" minOccurs="0">
+				<xs:complexType>
+					<xs:attribute name="Bold" type="ss:Boolean">
+						<xs:annotation>
+							<xs:documentation>
+								Specifies the bold state of the font. If the parent style has Bold="1" and the child style wants to override the setting, it must explicitly set the value to Bold="0". If this attribute is not specified within an element, the default is assumed.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+					<xs:attribute name="Color" type="ss:Color"/>
+					<xs:attribute name="FontName" type="xs:string">
+						<xs:annotation>
+							<xs:documentation>
+								Specifies the name of the font. This string is case insensitive. If this attribute is not specified within an element, the default is assumed.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+					<xs:attribute name="Italic" type="ss:Boolean">
+						<xs:annotation>
+							<xs:documentation>
+								Similar to Bold in behavior, this attribute specifies the italic state of the font. If this attribute is not specified within an element, the default is assumed.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+					<xs:attribute name="Size" type="xs:positiveInteger"/>
+					<xs:attribute name="Underline"/>
+					<xs:attribute ref="x:Family"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Interior" minOccurs="0">
+				<xs:complexType>
+					<xs:attribute name="Color" type="ss:Color"/>
+					<xs:attribute name="Pattern" type="ss:Pattern"></xs:attribute>
+					<xs:attribute name="PatternColor" type="ss:Color"></xs:attribute>
+				</xs:complexType>
+			</xs:element>
 			<xs:element name="NumberFormat" minOccurs="0"></xs:element>
 			<xs:element name="Protection" minOccurs="0"></xs:element>
 		</xs:all>
 		<xs:attribute name="ID" use="required"/>
 		<xs:attribute name="Name" use="optional"/>
+		<xs:attribute name="Parent" use="optional">
+			<xs:annotation>
+				<xs:documentation>
+					Presence of this element indicates that this style should first inherit it's default formatting settings from the specified parent style. Then, after the parent settings are inherited, we apply the settings in this style as overrides. This attribute refers to a predefined style ID.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 	</xs:complexType>
 	
 	<xs:complexType name="Cell">
 		<xs:sequence>
 			<xs:element name="Data" minOccurs="0">
 				<xs:complexType mixed="true">
-					<xs:attribute name="Type" >
+					<xs:attribute name="Type">
 						<xs:simpleType>
 							<xs:restriction base="xs:string">
 								<xs:enumeration value="String"></xs:enumeration>
@@ -28,6 +149,7 @@
 							</xs:restriction>
 						</xs:simpleType>
 					</xs:attribute>
+					<xs:attribute ref="x:Ticked"/>
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="NamedCell" maxOccurs="unbounded" minOccurs="0"/>
@@ -35,9 +157,37 @@
 		<xs:attribute name="StyleID" use="optional">
 			<xs:annotation>
 				<xs:documentation>
-					Determines the style used by the cell. If not used, will revert to the style with ss:ID="Default".
+					Specifies a reference to a previously defined ID attribute within a Style tag. This reference indicates that this Style should be used to format this element. If this attribute is not present, the default Style should be applied to this element. The default style, if specified, is the &lt;Style> tag whose ss:ID="Default".
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+		<xs:attribute name="MergeAcross" type="xs:int" default="0">
+			<xs:annotation>
+				<xs:documentation>
+					Specifies the number of adjacent cells across (right unless in right-to-left mode) from the current cell to merge. This count excludes the current cell.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Index" type="xs:int"/>
+		<xs:attribute name="MergeDown" type="xs:int">
+			<xs:annotation>
+				<xs:documentation>
+					Specifies the number of adjacent cells below the current cell to merge. This count excludes the current cell.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="HRef"/>
+		<xs:attribute ref="x:HRefScreenTip">
+			<xs:annotation>
+				<xs:documentation>
+					Specifies the ToolTip's content to display when the user hovers over this cell's ToolTip. 
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Formula">
+			
+		</xs:attribute>
+			
+		
 	</xs:complexType>
 </xs:schema>
