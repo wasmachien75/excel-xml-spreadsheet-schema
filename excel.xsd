@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="urn:schemas-microsoft-com:office:excel" xmlns:x="urn:schemas-microsoft-com:office:excel">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="urn:schemas-microsoft-com:office:excel" xmlns:x="urn:schemas-microsoft-com:office:excel">
+	<xs:import namespace="urn:schemas-microsoft-com:office:spreadsheet" schemaLocation="spreadsheet.xsd"/>
+	
 	<xs:element name="ExcelWorkbook"></xs:element>
 	<xs:attribute name="FullRows" type="xs:positiveInteger"/>
 	<xs:attribute name="FullColumns" type="xs:positiveInteger"/>
@@ -17,5 +19,52 @@
 			<xs:enumeration value="Swiss"></xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>
+	
+	<xs:element name="WorksheetOptions">
+		<xs:annotation>
+			<xs:documentation> This is an Excel defined element that contains a number of specific Excel features. </xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:all>
+				<xs:element name="PageSetup">
+					<xs:annotation>
+						<xs:documentation> Contains the print options for this workbook. </xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:all>
+							<xs:element name="Header"/>
+							<xs:element name="Footer"/>
+							<xs:element name="PageMargins">
+								<xs:complexType>
+									<xs:attribute name="Bottom" use="required" type="xs:double"/>
+									<xs:attribute name="Top" use="required" type="xs:double"/>
+									<xs:attribute name="Left" use="required" type="xs:double"/>
+									<xs:attribute name="Right" use="required" type="xs:double"/>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="PageLayout" minOccurs="0">
+								<xs:complexType>
+									<xs:attribute name="CenterHorizontal" type="ss:Boolean"></xs:attribute>
+									<xs:attribute name="CenterVertical" type="ss:Boolean"></xs:attribute>
+									<xs:attribute name="Orientation">
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:enumeration value="Portrait"/>
+												<xs:enumeration value="Landscape"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:attribute>
+									<xs:attribute name="StartPageNumber" type="xs:long"/>
+								</xs:complexType>
+							</xs:element>
+						</xs:all>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="DoNotDisplayGridlines" minOccurs="0"/>
+				<xs:element name="Selected" minOccurs="0"/>
+				<xs:element name="DoNotDisplayHeadings" minOccurs="0"/>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
 	
 </xs:schema>
