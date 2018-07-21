@@ -18,7 +18,7 @@
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="o:DocumentProperties"/>
+				<xs:element ref="o:DocumentProperties" minOccurs="0"/>
 				<xs:element ref="o:OfficeDocumentSettings" minOccurs="0"/>
 				<xs:element ref="x:ExcelWorkbook" minOccurs="0"/>
 				<xs:element name="Styles" minOccurs="0">
@@ -28,17 +28,32 @@
 					</xs:annotation>
 					<xs:complexType>
 						<xs:sequence>
-							<xs:element maxOccurs="unbounded" type="ss:Style" name="Style"/>
+							<xs:element maxOccurs="unbounded" type="ss:Style" name="Style">
+								<xs:annotation>
+									<xs:documentation>
+										Defines a single style in the current workbook. This element is optional, but is required to perform any custom formatting. A style can be either standalone or based on one other style (this is called the parent style), in which case, all base properties are first inherited from the parent, then the properties in the style are treated as overrides. Parent styles must be specified before they are first referenced
+									</xs:documentation>
+								</xs:annotation>
+							</xs:element>
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
-				<xs:element name="Names" minOccurs="0"/>
-				<xs:element name="Worksheet" minOccurs="1">
+				<xs:element name="Names" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>
+							Defines the collection of named ranges within this workbook or worksheet. ss:NamedRange elements in the &lt;ss:Workbook> collection require RefersTo attributes with an explicit SheetN! qualifier (for example, Sheet1!).
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="Worksheet" minOccurs="1" maxOccurs="unbounded">
 					<xs:annotation>
 						<xs:appinfo>
 							<sch:pattern>
 								<sch:rule context="//@ss:StyleID">
 									<sch:assert test=". = /ss:Workbook/ss:Styles/ss:Style/@ss:ID">StyleID must be defined in Styles</sch:assert>
+								</sch:rule>
+								<sch:rule context="/ss:Workbook/ss:Styles/ss:Style">
+									<sch:assert test="./@ss:ID = /ss:Workbook/ss:Worksheet/ss:Table//@ss:StyleID or ./@ss:ID = 'Default'" role="warning">This style is not used.</sch:assert>
 								</sch:rule>
 							</sch:pattern>
 						</xs:appinfo>
@@ -56,7 +71,7 @@
 													behavior may occur. </xs:documentation>
 											</xs:annotation>
 											<xs:complexType>
-												<xs:attribute name="AutoFitWidth">
+												<xs:attribute name="AutoFitWidth" type="ss:Boolean">
 													<xs:annotation>
 														<xs:documentation> If this attribute is specified as True ("1"), it means that this column should be autosized for numeric
 															and date values only. We do not autofit textual values. </xs:documentation>
@@ -69,7 +84,7 @@
 												<xs:attribute name="Hidden"/>
 											</xs:complexType>
 										</xs:element>
-										<xs:element name="Row" maxOccurs="unbounded">
+										<xs:element name="Row" minOccurs="0" maxOccurs="unbounded">
 											<xs:complexType>
 												<xs:sequence>
 													<xs:element name="Cell" maxOccurs="unbounded" minOccurs="0" type="ss:Cell">
@@ -95,7 +110,23 @@
 														</xs:restriction>
 													</xs:simpleType>
 												</xs:attribute>
-												<xs:anyAttribute processContents="skip" namespace="urn:schemas-microsoft-com:office:spreadsheet"/>
+												<xs:attribute name="Height" type="xs:double">
+													<xs:annotation>
+														<xs:documentation>
+															Specifies the height of a row in points. This value must be greater than or equal to 0.
+														</xs:documentation>
+													</xs:annotation>
+												</xs:attribute>
+												<xs:attribute name="Hidden"></xs:attribute>
+												<xs:attribute name="Index"></xs:attribute>
+												<xs:attribute name="Span">
+													<xs:annotation>
+														<xs:documentation>
+															Unlike columns, rows with the Span attribute must be empty. A row that contains a Span attribute and one or more Cell elements is considered invalid. The Span attribute for rows is a short-hand method for setting formatting properties for multiple, empty rows.
+														</xs:documentation>
+													</xs:annotation>
+												</xs:attribute>
+												<xs:attribute name="StyleID"/>
 											</xs:complexType>
 										</xs:element>
 									</xs:sequence>
@@ -122,17 +153,11 @@
 											</xs:appinfo>
 										</xs:annotation>
 									</xs:attribute>
-									<xs:attribute ref="x:FullColumns"/>
+									<xs:attributeGroup ref="x:tableAttributes"/>
 									<xs:attribute name="DefaultColumnWidth" type="xs:double" default="48">
 										<xs:annotation>
 											<xs:documentation> Specifies the default width of columns in this table. This attribute is specified in points.
 											</xs:documentation>
-										</xs:annotation>
-									</xs:attribute>
-									<xs:attribute ref="x:FullRows">
-										<xs:annotation>
-											<xs:documentation> This attribute is ignored on file load, but on XML Spreadsheet paste it is taken to indicate that the source
-												clip has full rows. </xs:documentation>
 										</xs:annotation>
 									</xs:attribute>
 									<xs:attribute name="DefaultRowHeight" type="xs:double" default="12.75"/>
@@ -143,7 +168,6 @@
 									<xs:documentation> This is an Excel defined element that contains a number of specific Excel features. </xs:documentation>
 								</xs:annotation>
 							</xs:element>
-							<xs:any minOccurs="0" processContents="lax"/>
 						</xs:sequence>
 						<xs:attribute form="qualified" name="Name"/>
 					</xs:complexType>

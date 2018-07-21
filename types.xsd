@@ -1,13 +1,78 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" targetNamespace="urn:schemas-microsoft-com:office:spreadsheet" attributeFormDefault="qualified" elementFormDefault="qualified">
+<xs:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" targetNamespace="urn:schemas-microsoft-com:office:spreadsheet" attributeFormDefault="qualified" elementFormDefault="qualified">
 	<xs:import namespace="urn:schemas-microsoft-com:office:excel" schemaLocation="excel.xsd"/>
-		
+	
+	<xs:complexType name="Alignment">
+		<xs:attribute name="Horizontal">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="Automatic"></xs:enumeration>
+					<xs:enumeration value="Left"></xs:enumeration>
+					<xs:enumeration value="Center"></xs:enumeration>
+					<xs:enumeration value="Right"></xs:enumeration>
+					<xs:enumeration value="Fill"></xs:enumeration>
+					<xs:enumeration value="Justify"></xs:enumeration>
+					<xs:enumeration value="CenterAcrossSelection"></xs:enumeration>
+					<xs:enumeration value="Distributed"></xs:enumeration>
+					<xs:enumeration value="JustifyDistributed"></xs:enumeration>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="Indent" type="xs:int"/>
+		<xs:attribute name="Vertical">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="Automatic"/>
+					<xs:enumeration value="Top"/>
+					<xs:enumeration value="Bottom"/>
+					<xs:enumeration value="Center"/>
+					<xs:enumeration value="Justify"/>
+					<xs:enumeration value="Distributed"/>
+					<xs:enumeration value="JustifyDistributed"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="VerticalText" type="ss:Boolean"/>
+		<xs:attribute name="WrapText" type="ss:Boolean"/>
+		<xs:attribute name="Rotate">
+			<xs:simpleType>
+				<xs:restriction base="xs:int">
+					<xs:enumeration value="0"></xs:enumeration>
+					<xs:enumeration value="90"></xs:enumeration>
+					<xs:enumeration value="-90"></xs:enumeration>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+	</xs:complexType>
+	
+	<xs:complexType name="Borders">
+		<xs:sequence>
+			<xs:element name="Border" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:attribute name="Position" type="ss:Position" use="required"/>
+					<xs:attribute name="Color" type="ss:Color"/>
+					<xs:attribute name="LineStyle" type="ss:LineStyle" default="None">
+						<xs:annotation>
+							<xs:documentation>
+								Specifies the appearance of this border. The Spreadsheet component does not support SlantDashDot and Double.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+					<xs:attribute name="Weight" type="ss:Weight" default="0">
+						<xs:annotation>
+							<xs:documentation>
+								Specifies the weight (or thickness) of this border. This measurement is specified in points
+							</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+				</xs:complexType>
+				
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	
+	
 	<xs:simpleType name="Color">
-		<xs:annotation>
-			<xs:documentation>
-				Specifies the fill color of the cell. This value can be either a 6-hexadecimal digit number in "#rrggbb" format or it can be any of the Internet Explorer named colors (including the named Windows colors).
-			</xs:documentation>
-		</xs:annotation>
 		<xs:restriction base="xs:string">
 			<xs:pattern value="#[0-9 A-F a-f]{6}"></xs:pattern>
 		</xs:restriction>
@@ -47,14 +112,14 @@
 	
 	<xs:simpleType name="LineStyle">
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="None"></xs:enumeration>
-			<xs:enumeration value="Continuous"></xs:enumeration>
-			<xs:enumeration value="Dash"></xs:enumeration>
-			<xs:enumeration value="Dot"></xs:enumeration>
-			<xs:enumeration value="DashDot"></xs:enumeration>
-			<xs:enumeration value="DashDotDot"></xs:enumeration>
-			<xs:enumeration value="SlantDashDot"></xs:enumeration>
-			<xs:enumeration value="Double"></xs:enumeration>
+			<xs:enumeration value="None"/>
+			<xs:enumeration value="Continuous"/>
+			<xs:enumeration value="Dash"/>
+			<xs:enumeration value="Dot"/>
+			<xs:enumeration value="DashDot"/>
+			<xs:enumeration value="DashDotDot"/>
+			<xs:enumeration value="SlantDashDot"/>
+			<xs:enumeration value="Double"/>
 		</xs:restriction>
 	</xs:simpleType>
 	
@@ -69,22 +134,19 @@
 	
 	<xs:complexType name="Style">
 		<xs:all>
-			<xs:element name="Alignment" minOccurs="0"></xs:element>
-			<xs:element name="Borders" minOccurs="0">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="Border" minOccurs="0" maxOccurs="unbounded">
-							<xs:complexType>
-								<xs:attribute name="Position" type="ss:Position"/>
-								<xs:attribute name="Color" type="ss:Color"/>
-								<xs:attribute name="LineStyle" type="ss:LineStyle" default="None"/>
-								<xs:attribute name="Weight" type="ss:Weight" default="0"/>
-							</xs:complexType>
-						</xs:element>
-					</xs:sequence>
-				</xs:complexType>
+			<xs:element name="Alignment" minOccurs="0" type="ss:Alignment"/>
+			<xs:element name="Borders" minOccurs="0" type="ss:Borders">
+				<xs:unique name="uniquePositionForBorder">
+					<xs:selector xpath="ss:Border"></xs:selector>
+					<xs:field xpath="@ss:Position"></xs:field>
+				</xs:unique>
 			</xs:element>
 			<xs:element name="Font" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+						Defines the font attributes to use in this style. Each attribute that is specified is considered an override from the default.
+					</xs:documentation>
+				</xs:annotation>
 				<xs:complexType>
 					<xs:attribute name="Bold" type="ss:Boolean">
 						<xs:annotation>
@@ -93,7 +155,13 @@
 							</xs:documentation>
 						</xs:annotation>
 					</xs:attribute>
-					<xs:attribute name="Color" type="ss:Color"/>
+					<xs:attribute name="Color" type="ss:Color">
+						<xs:annotation>
+							<xs:documentation>
+								Specifies the color of the font. This value can be either a 6-hexadecimal digit number in "#rrggbb" format or it can be any of the Internet Explorer named colors (including the named Windows colors). This string can also be special value of Automatic. This string is case insensitive. If this attribute is not specified within an element, the default is assumed.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
 					<xs:attribute name="FontName" type="xs:string">
 						<xs:annotation>
 							<xs:documentation>
@@ -108,23 +176,75 @@
 							</xs:documentation>
 						</xs:annotation>
 					</xs:attribute>
-					<xs:attribute name="Size" type="xs:positiveInteger"/>
-					<xs:attribute name="Underline"/>
-					<xs:attribute ref="x:Family"/>
+					<xs:attribute name="Size" type="xs:positiveInteger">
+						<xs:annotation>
+							<xs:documentation>
+								Specifies the size of the font in points. This value must be strictly greater than 0. If this attribute is not specified within an element, the default is assumed.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+					<xs:attribute name="Underline">
+						<xs:annotation>
+							<xs:documentation>
+								Specifies the underline state of the font. If the parent style is something other than None and a child style wants to override the value, it must explicitly reset the value. If this attribute is not specified within an element, the default is assumed.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+					<xs:attribute ref="x:Family">
+						<xs:annotation>
+							<xs:documentation>Win32-dependent font family.</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="Interior" minOccurs="0">
 				<xs:complexType>
-					<xs:attribute name="Color" type="ss:Color"/>
-					<xs:attribute name="Pattern" type="ss:Pattern"></xs:attribute>
-					<xs:attribute name="PatternColor" type="ss:Color"></xs:attribute>
+					<xs:attribute name="Color" type="ss:Color">
+						<xs:annotation>
+							<xs:documentation>
+								Specifies the fill color of the cell. 
+							</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+					<xs:attribute name="Pattern" type="ss:Pattern">
+						<xs:annotation>
+							<xs:documentation>
+								Specifies the fill pattern in the cell. The fill pattern determines how to blend the Color and PatternColor attributes to produce the cell's appearance.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+					<xs:attribute name="PatternColor" type="ss:Color">
+						<xs:annotation>
+							<xs:documentation>
+								Specifies the secondary fill color of the cell when Pattern does not equal Solid. The Spreadsheet component does not support this attribute.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
 				</xs:complexType>
 			</xs:element>
-			<xs:element name="NumberFormat" minOccurs="0"></xs:element>
-			<xs:element name="Protection" minOccurs="0"></xs:element>
+			<xs:element name="NumberFormat" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+						Defines the number format that should be in cells referencing this style. The default value is General, and all other number formats require a custom format code.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Protection" minOccurs="0"/>
 		</xs:all>
-		<xs:attribute name="ID" use="required"/>
-		<xs:attribute name="Name" use="optional"/>
+		<xs:attribute name="ID" use="required">
+			<xs:annotation>
+				<xs:documentation>
+					A unique name within this XML document that identifies this style. This string can be any valid identifier and there is no notion of order. The special value of "Default" indicates that this style represents the default formatting for this workbook.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Name" use="optional">
+			<xs:annotation>
+				<xs:documentation>
+					This property identifies this style as a named style that was created in Excel using the Style command (Format menu). Duplicate names are illegal.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 		<xs:attribute name="Parent" use="optional">
 			<xs:annotation>
 				<xs:documentation>
@@ -137,6 +257,18 @@
 	<xs:complexType name="Cell">
 		<xs:sequence>
 			<xs:element name="Data" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>
+						<sch:pattern>
+							<sch:rule context="ss:Data">
+								<sch:assert test="if(@ss:Type='DateTime') then(. = '' or . castable as xs:dateTime) else 
+																	if(@ss:Type='Number') then (. = '' or . castable as xs:float) else
+																	if(@ss:Type='String') then (. = '' or . castable as xs:string)
+																	else true()">Content does not match specified data type.</sch:assert>
+							</sch:rule>
+						</sch:pattern>
+					</xs:appinfo>
+				</xs:annotation>
 				<xs:complexType mixed="true">
 					<xs:attribute name="Type">
 						<xs:simpleType>

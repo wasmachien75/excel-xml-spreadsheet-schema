@@ -2,9 +2,16 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="urn:schemas-microsoft-com:office:excel" xmlns:x="urn:schemas-microsoft-com:office:excel">
 	<xs:import namespace="urn:schemas-microsoft-com:office:spreadsheet" schemaLocation="spreadsheet.xsd"/>
 	
-	<xs:element name="ExcelWorkbook"></xs:element>
-	<xs:attribute name="FullRows" type="xs:positiveInteger"/>
-	<xs:attribute name="FullColumns" type="xs:positiveInteger"/>
+	<xs:element name="ExcelWorkbook"/>
+	<xs:attributeGroup name="tableAttributes">
+		<xs:attribute name="FullRows" type="xs:positiveInteger">
+			<xs:annotation>
+				<xs:documentation> This attribute is ignored on file load, but on XML Spreadsheet paste it is taken to indicate that the source
+					clip has full rows. </xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="FullColumns" type="xs:positiveInteger"/>
+	</xs:attributeGroup>
 	<xs:attribute name="Ticked"/>
 	<xs:attribute name="Family" type="x:FontFamily"/>
 	<xs:attribute name="HRefScreenTip"/>
@@ -26,7 +33,7 @@
 		</xs:annotation>
 		<xs:complexType>
 			<xs:all>
-				<xs:element name="PageSetup">
+				<xs:element name="PageSetup" minOccurs="0">
 					<xs:annotation>
 						<xs:documentation> Contains the print options for this workbook. </xs:documentation>
 					</xs:annotation>
@@ -42,7 +49,7 @@
 									<xs:attribute name="Right" use="required" type="xs:double"/>
 								</xs:complexType>
 							</xs:element>
-							<xs:element name="PageLayout" minOccurs="0">
+							<xs:element name="Layout" minOccurs="0">
 								<xs:complexType>
 									<xs:attribute name="CenterHorizontal" type="ss:Boolean"></xs:attribute>
 									<xs:attribute name="CenterVertical" type="ss:Boolean"></xs:attribute>
@@ -57,12 +64,69 @@
 									<xs:attribute name="StartPageNumber" type="xs:long"/>
 								</xs:complexType>
 							</xs:element>
+							
 						</xs:all>
 					</xs:complexType>
 				</xs:element>
-				<xs:element name="DoNotDisplayGridlines" minOccurs="0"/>
-				<xs:element name="Selected" minOccurs="0"/>
-				<xs:element name="DoNotDisplayHeadings" minOccurs="0"/>
+				<xs:element name="Unsynced" minOccurs="0" fixed=""/>
+				<xs:element name="DoNotDisplayGridlines" minOccurs="0" fixed="">
+					<xs:annotation>
+						<xs:documentation>
+							Specifies whether grid lines are displayed in a worksheet window.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="Selected" minOccurs="0" fixed="">
+					<xs:annotation>
+						<xs:documentation>
+							Specifies whether a worksheet is selected.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="DoNotDisplayHeadings" minOccurs="0" fixed="">
+					<xs:annotation>
+						<xs:documentation>
+							Specifies whether the headings are hidden.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="DoNotDisplayZeros" minOccurs="0" fixed="">
+					<xs:annotation>
+						<xs:documentation>
+							Specifies whether zero values are displayed in a worksheet window.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="Panes" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Pane" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Print" minOccurs="0"/>
+				<xs:element name="ProtectObjects" minOccurs="0"/>
+				<xs:element name="ProtectScenarios" minOccurs="0"/>
+				<xs:element name="Zoom" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>
+							Contains a value specifying the zoom level of a worksheet window.
+						</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:int">
+							<xs:minInclusive value="10"/>
+							<xs:maxInclusive value="400"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="DisplayFormulas" minOccurs="0" fixed="">
+					<xs:annotation>
+						<xs:documentation>
+							Specifies whether formulas are displayed in a worksheet window.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
 			</xs:all>
 		</xs:complexType>
 	</xs:element>
