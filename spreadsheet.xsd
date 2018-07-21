@@ -37,6 +37,10 @@
 							</xs:element>
 						</xs:sequence>
 					</xs:complexType>
+					<xs:unique name="uniqueStyleId">
+						<xs:selector xpath="ss:Style"></xs:selector>
+						<xs:field xpath="@ss:ID"></xs:field>
+					</xs:unique>
 				</xs:element>
 				<xs:element name="Names" minOccurs="0">
 					<xs:annotation>
