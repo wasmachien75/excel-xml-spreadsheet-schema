@@ -4,7 +4,9 @@
 		<xs:complexType>
 			<xs:all>
 				<xs:element name="Author" type="xs:string" minOccurs="0"/>
+				<xs:element name="Description" type="xs:string" minOccurs="0"/>
 				<xs:element name="LastAuthor" type="xs:string" minOccurs="0"/>
+				<xs:element name="LastPrinted" type="xs:dateTime" minOccurs="0"/>
 				<xs:element name="Created" type="xs:dateTime" minOccurs="0"/>
 				<xs:element name="Company" type="xs:string" minOccurs="0"/>
 				<xs:element name="Version" minOccurs="0"/>

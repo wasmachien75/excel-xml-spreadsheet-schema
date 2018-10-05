@@ -39,9 +39,9 @@
 					</xs:annotation>
 					<xs:complexType>
 						<xs:all>
-							<xs:element name="Header"/>
-							<xs:element name="Footer"/>
-							<xs:element name="PageMargins">
+							<xs:element name="Header" minOccurs="0"/>
+							<xs:element name="Footer" minOccurs="0"/>
+							<xs:element name="PageMargins" minOccurs="0">
 								<xs:complexType>
 									<xs:attribute name="Bottom" use="required" type="xs:double"/>
 									<xs:attribute name="Top" use="required" type="xs:double"/>
@@ -64,7 +64,6 @@
 									<xs:attribute name="StartPageNumber" type="xs:long"/>
 								</xs:complexType>
 							</xs:element>
-							
 						</xs:all>
 					</xs:complexType>
 				</xs:element>
@@ -83,6 +82,13 @@
 						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
+				<xs:element name="DoNotDisplayOutline" minOccurs="0" fixed="">
+					<xs:annotation>
+						<xs:documentation>
+							Specifies whether outline symbols are displayed in a worksheet window.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
 				<xs:element name="DoNotDisplayHeadings" minOccurs="0" fixed="">
 					<xs:annotation>
 						<xs:documentation>
@@ -94,6 +100,13 @@
 					<xs:annotation>
 						<xs:documentation>
 							Specifies whether zero values are displayed in a worksheet window.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="FitToPage" minOccurs="0" fixed="">
+					<xs:annotation>
+						<xs:documentation>
+							Sets print scaling option to &amp;Fit Sheet on One Page&amp;
 						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
