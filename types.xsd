@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" targetNamespace="urn:schemas-microsoft-com:office:spreadsheet" attributeFormDefault="qualified" elementFormDefault="qualified">
+<xs:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron" version="1.1" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" targetNamespace="urn:schemas-microsoft-com:office:spreadsheet" attributeFormDefault="qualified" elementFormDefault="qualified">
 	<xs:import namespace="urn:schemas-microsoft-com:office:excel" schemaLocation="excel.xsd"/>
 	
 	<xs:complexType name="Alignment">
@@ -43,8 +43,28 @@
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>
+		<xs:attribute name="ShrinkToFit" type="ss:Boolean">
+			<xs:annotation>
+				<xs:documentation>
+					True means that the text size should be shrunk so that all of the text fits within the cell. False means that the font within the cell should behave normally. The Spreadsheet component does not support this attribute.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="ReadingOrder">
+			<xs:annotation>
+				<xs:documentation>
+					Specifies the default right-to-left text entry mode for a cell. The Spreadsheet component does not support Context.
+				</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="RightToLeft"/>
+					<xs:enumeration value="LeftToRight"/>
+					<xs:enumeration value="Context"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
 	</xs:complexType>
-	
 	<xs:complexType name="Borders">
 		<xs:sequence>
 			<xs:element name="Border" minOccurs="0" maxOccurs="unbounded">
@@ -70,21 +90,20 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
-	
-	
 	<xs:simpleType name="Color">
 		<xs:restriction base="xs:string">
 			<xs:pattern value="#[0-9 A-F a-f]{6}"></xs:pattern>
 		</xs:restriction>
 	</xs:simpleType>
-	
 	<xs:simpleType name="Boolean">
+		<xs:annotation>
+			<xs:documentation>0 indicates false, 1 indicates true</xs:documentation>
+		</xs:annotation>
 		<xs:restriction base="xs:int">
 			<xs:enumeration value="0"/>
 			<xs:enumeration value="1"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
 	<xs:simpleType name="Position">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="Left"></xs:enumeration>
@@ -107,6 +126,7 @@
 			<xs:enumeration value="HorzStripe"></xs:enumeration>
 			<xs:enumeration value="VertStripe"></xs:enumeration>
 			<xs:enumeration value="DiagStripe"></xs:enumeration>
+			<xs:enumeration value="ThinDiagStripe"/>
 		</xs:restriction>
 	</xs:simpleType>
 	
@@ -190,11 +210,7 @@
 							</xs:documentation>
 						</xs:annotation>
 					</xs:attribute>
-					<xs:attribute ref="x:Family">
-						<xs:annotation>
-							<xs:documentation>Win32-dependent font family.</xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
+					<xs:attributeGroup ref="x:fontAttributes"/>
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="Interior" minOccurs="0">
@@ -270,7 +286,10 @@
 					</xs:appinfo>
 				</xs:annotation>
 				<xs:complexType mixed="true">
-					<xs:attribute name="Type">
+					<xs:sequence>
+						<xs:any processContents="skip" minOccurs="0" maxOccurs="unbounded" namespace="http://www.w3.org/TR/REC-html40"/>
+					</xs:sequence>
+					<xs:attribute name="Type" use="required">
 						<xs:simpleType>
 							<xs:restriction base="xs:string">
 								<xs:enumeration value="String"></xs:enumeration>
@@ -281,7 +300,6 @@
 							</xs:restriction>
 						</xs:simpleType>
 					</xs:attribute>
-					<xs:attribute ref="x:Ticked"/>
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="NamedCell" maxOccurs="unbounded" minOccurs="0"/>
@@ -309,17 +327,7 @@
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attribute name="HRef"/>
-		<xs:attribute ref="x:HRefScreenTip">
-			<xs:annotation>
-				<xs:documentation>
-					Specifies the ToolTip's content to display when the user hovers over this cell's ToolTip. 
-				</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
-		<xs:attribute name="Formula">
-			
-		</xs:attribute>
-			
-		
+		<xs:attribute name="Formula"/>
+		<xs:attributeGroup ref="x:cellAttributes"/>
 	</xs:complexType>
 </xs:schema>

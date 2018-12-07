@@ -3,6 +3,7 @@
 	<xs:import namespace="urn:schemas-microsoft-com:office:spreadsheet" schemaLocation="spreadsheet.xsd"/>
 	
 	<xs:element name="ExcelWorkbook"/>
+	
 	<xs:attributeGroup name="tableAttributes">
 		<xs:attribute name="FullRows" type="xs:positiveInteger">
 			<xs:annotation>
@@ -12,9 +13,26 @@
 		</xs:attribute>
 		<xs:attribute name="FullColumns" type="xs:positiveInteger"/>
 	</xs:attributeGroup>
-	<xs:attribute name="Ticked"/>
-	<xs:attribute name="Family" type="x:FontFamily"/>
-	<xs:attribute name="HRefScreenTip"/>
+	
+	<xs:attributeGroup name="fontAttributes">
+		<xs:attribute name="Family" type="x:FontFamily">
+			<xs:annotation>
+				<xs:documentation>Win32-dependent font family.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="CharSet"/>
+	</xs:attributeGroup>
+	
+	<xs:attributeGroup name="cellAttributes">
+		<xs:attribute name="Ticked"/>
+		<xs:attribute name="HRefScreenTip">
+			<xs:annotation>
+				<xs:documentation>
+					Specifies the ToolTip's content to display when the user hovers over this cell's ToolTip. 
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:attributeGroup>
 	
 	<xs:simpleType name="FontFamily">
 		<xs:restriction base="xs:string">
@@ -65,6 +83,7 @@
 								</xs:complexType>
 							</xs:element>
 						</xs:all>
+						<xs:attribute name="PaperSize" type="xs:int"/>
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="Unsynced" minOccurs="0" fixed=""/>
@@ -133,6 +152,7 @@
 						</xs:restriction>
 					</xs:simpleType>
 				</xs:element>
+				<xs:element name="PageBreakZoom" minOccurs="0" type="xs:int"/>
 				<xs:element name="DisplayFormulas" minOccurs="0" fixed="">
 					<xs:annotation>
 						<xs:documentation>
@@ -143,5 +163,6 @@
 			</xs:all>
 		</xs:complexType>
 	</xs:element>
-	
+	<xs:element name="ConditionalFormatting"/>
+	<xs:element name="PageBreaks"/>
 </xs:schema>
